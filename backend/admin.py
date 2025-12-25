@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User, Shop, Category, Product, ProductInfo, Parameter, ProductParameter, Order, OrderItem, Contact, ConfirmEmailToken
 
-from backend.models import User, Shop, Category, Product, ProductInfo, Parameter, ProductParameter, Order, OrderItem, \
-    Contact, ConfirmEmailToken
-
-
+# -----------------------
+# User
+# -----------------------
 @admin.register(User)
 class CustomUserAdmin(BaseUserAdmin):
     """
@@ -12,17 +12,13 @@ class CustomUserAdmin(BaseUserAdmin):
     Кастомизирована под модель User с дополнительными полями: company, position, type (shop/buyer).
     Позволяет удобно просматривать и редактировать пользователей разных типов (покупатели и поставщики).
     """
-    # Поля для формы редактирования пользователя (change view)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'company', 'position', 'type')}),
-        ('Permissions', {
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
-        }),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
-    # Поля для формы добавления пользователя (add view)
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -30,13 +26,14 @@ class CustomUserAdmin(BaseUserAdmin):
         }),
     )
 
-    # Что показывать в списке пользователей
     list_display = ('email', 'first_name', 'last_name', 'company', 'position', 'type', 'is_staff')
     list_filter = ('type', 'is_staff', 'is_superuser', 'is_active')
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
 
-
+# -----------------------
+# Shop
+# -----------------------
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
     """
@@ -47,7 +44,9 @@ class ShopAdmin(admin.ModelAdmin):
     list_filter = ('state',)
     search_fields = ('name', 'user__email')
 
-
+# -----------------------
+# Category
+# -----------------------
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     """
@@ -56,20 +55,34 @@ class CategoryAdmin(admin.ModelAdmin):
     """
     list_display = ('name',)
     search_fields = ('name',)
-    filter_horizontal = ('shops',)  # Удобный выбор магазинов через ManyToMany
+    filter_horizontal = ('shops',)
 
-
+# -----------------------
+# Product
+# -----------------------
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     """
     Административная панель для модели Product (продукты/наименования товаров).
-    Позволяет управлять базовой информацией о товарах и их категориями.
+    Позволяет управлять базовой информацией о товарах, категориями и отображает связанные магазины через ProductInfo.
     """
-    list_display = ('name', 'category')
+    list_display = ('name', 'category', 'get_shops')
     list_filter = ('category',)
     search_fields = ('name',)
 
+    def get_shops(self, obj):
+        """
+        Возвращает список магазинов, где продаётся этот продукт
+        через связанные ProductInfo.
+        """
+        shops = obj.product_infos.all().values_list('shop__name', flat=True)
+        return ", ".join(shops)
+    
+    get_shops.short_description = 'Магазины'
 
+# -----------------------
+# ProductInfo
+# -----------------------
 @admin.register(ProductInfo)
 class ProductInfoAdmin(admin.ModelAdmin):
     """
@@ -80,7 +93,9 @@ class ProductInfoAdmin(admin.ModelAdmin):
     list_filter = ('shop',)
     search_fields = ('product__name', 'external_id')
 
-
+# -----------------------
+# Parameter
+# -----------------------
 @admin.register(Parameter)
 class ParameterAdmin(admin.ModelAdmin):
     """
@@ -90,7 +105,9 @@ class ParameterAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 
-
+# -----------------------
+# ProductParameter
+# -----------------------
 @admin.register(ProductParameter)
 class ProductParameterAdmin(admin.ModelAdmin):
     """
@@ -101,7 +118,9 @@ class ProductParameterAdmin(admin.ModelAdmin):
     list_filter = ('parameter',)
     search_fields = ('value', 'parameter__name')
 
-
+# -----------------------
+# Order
+# -----------------------
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     """
@@ -112,7 +131,9 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ('state', 'dt')
     search_fields = ('id', 'user__email')
 
-
+# -----------------------
+# OrderItem
+# -----------------------
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     """
@@ -123,7 +144,9 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_filter = ('order__state',)
     search_fields = ('order__id', 'product_info__product__name')
 
-
+# -----------------------
+# Contact
+# -----------------------
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
     """
@@ -134,7 +157,9 @@ class ContactAdmin(admin.ModelAdmin):
     list_filter = ('city',)
     search_fields = ('user__email', 'phone')
 
-
+# -----------------------
+# ConfirmEmailToken
+# -----------------------
 @admin.register(ConfirmEmailToken)
 class ConfirmEmailTokenAdmin(admin.ModelAdmin):
     """
