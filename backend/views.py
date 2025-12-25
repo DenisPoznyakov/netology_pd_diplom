@@ -45,6 +45,7 @@ class RegisterAccount(APIView):
     Эндпоинт для регистрации новых покупателей.
     Создаёт неактивного пользователя и отправляет письмо с токеном подтверждения email (через сигналы).
     """
+    throttle_scope = 'login'
 
     def post(self, request, *args, **kwargs):
         """
@@ -142,6 +143,7 @@ class LoginAccount(APIView):
     Эндпоинт для авторизации пользователей.
     Возвращает токен аутентификации (TokenAuthentication).
     """
+    throttle_scope = 'login'
 
     def post(self, request, *args, **kwargs):
         """
