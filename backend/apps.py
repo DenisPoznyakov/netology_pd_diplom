@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class BackendConfig(AppAppConfig):
+class BackendConfig(AppConfig):
     """
     Конфигурация приложения backend.
 

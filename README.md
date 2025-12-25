@@ -138,6 +138,18 @@ python manage.py test backend
 
 ---
 
+## Асинхронные задачи (Celery)
+
+- Отправка email (подтверждение регистрации, сброс пароля, уведомления о заказе) переведена на асинхронные задачи Celery.
+- Брокер — Redis (localhost:6379).
+- Задача: `backend.tasks.send_email_task`.
+- Запуск:
+  - Redis: `redis-server.exe`
+  - Celery: `python -m celery -A netology_pd_diplom worker -l info`
+  - Django: `python manage.py runserver`
+
+При регистрации пользователя через API в консоли Celery видно выполнение задачи send_email_task.
+
 ## Автор
 
 Позняков Денис Андреевич
