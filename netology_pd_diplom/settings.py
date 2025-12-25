@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_rest_passwordreset',
     'backend',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -150,6 +151,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
 
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -161,3 +164,27 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'API дипломного проекта Netology — Интернет-магазин',
+    'DESCRIPTION': '''
+Backend-сервис для розничной сети.
+
+Реализован полный цикл закупок:
+- Регистрация, авторизация, восстановление пароля
+- Каталог товаров с фильтрами
+- Корзина и оформление заказов
+- Импорт/экспорт прайсов поставщиками (YAML)
+- Асинхронная отправка email через Celery
+- Изменение статуса заказов с уведомлением покупателя
+
+Дипломный проект Познякова Дениса, 2025
+    ''',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+    },
+    'COMPONENT_SPLIT_REQUEST': True,
+}
