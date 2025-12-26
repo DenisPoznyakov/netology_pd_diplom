@@ -1,6 +1,8 @@
 from django.urls import path, include
 from django.contrib import admin
 from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
+from django.conf import settings
+from django.conf.urls.static import static
 
 from backend.views import PartnerUpdate, RegisterAccount, LoginAccount, CategoryView, ShopView, ProductInfoView, \
     BasketView, \
@@ -28,4 +30,4 @@ urlpatterns = [
     path('order', OrderView.as_view(), name='order'),
     path('grappelli/', include('grappelli.urls')),
     path('admin/', admin.site.urls),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

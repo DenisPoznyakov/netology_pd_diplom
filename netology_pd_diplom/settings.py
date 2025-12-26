@@ -184,6 +184,12 @@ SOCIAL_AUTH_GITHUB_KEY = os.getenv('SOCIAL_AUTH_GITHUB_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = os.getenv('SOCIAL_AUTH_GITHUB_SECRET')
 
 # ------------------------------------------------------------------------------
+# MEDIA
+# ------------------------------------------------------------------------------
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ------------------------------------------------------------------------------
 # CELERY
 # ------------------------------------------------------------------------------
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

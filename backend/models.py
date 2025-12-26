@@ -68,29 +68,30 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     company = models.CharField(verbose_name='Компания', max_length=40, blank=True)
     position = models.CharField(verbose_name='Должность', max_length=40, blank=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         _('username'),
         max_length=150,
         help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
         validators=[username_validator],
-        error_messages={
-            'unique': _("A user with that username already exists."),
-        },
+        error_messages={'unique': _("A user with that username already exists.")},
     )
     is_active = models.BooleanField(
         _('active'),
         default=False,
-        help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
-        ),
+        help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
     )
     type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5, default='buyer')
 
     def __str__(self):
-        """Возвращает имя и фамилию пользователя"""
         return f'{self.first_name} {self.last_name}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.avatar:
+            from backend.tasks import generate_thumbnails
+            generate_thumbnails.delay(self.avatar.name)
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -132,8 +133,8 @@ class Category(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=80, verbose_name='Название')
-    category = models.ForeignKey(Category, verbose_name='Категория', related_name='products', blank=True,
-                                 on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, verbose_name='Категория', related_name='products', blank=True, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='products/', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Продукт'
@@ -141,8 +142,13 @@ class Product(models.Model):
         ordering = ('-name',)
 
     def __str__(self):
-        """Возвращает название продукта"""
         return self.name
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.image:
+            from backend.tasks import generate_thumbnails
+            generate_thumbnails.delay(self.image.name)
 
 
 class ProductInfo(models.Model):
