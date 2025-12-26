@@ -3,6 +3,7 @@ from django.contrib import admin
 from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.decorators.cache import cache_page
 
 from backend.views import PartnerUpdate, RegisterAccount, LoginAccount, CategoryView, ShopView, ProductInfoView, \
     BasketView, \
@@ -23,9 +24,9 @@ urlpatterns = [
     path('user/login', LoginAccount.as_view(), name='user-login'),
     path('user/password_reset', reset_password_request_token, name='password-reset'),
     path('user/password_reset/confirm', reset_password_confirm, name='password-reset-confirm'),
-    path('categories', CategoryView.as_view(), name='categories'),
-    path('shops', ShopView.as_view(), name='shops'),
-    path('products', ProductInfoView.as_view(), name='shops'),
+    path('categories', cache_page(60 * 15)(CategoryView.as_view()), name='categories'),
+    path('shops', cache_page(60 * 10)(ShopView.as_view()), name='shops'),
+    path('products', cache_page(60 * 2)(ProductInfoView.as_view()), name='products'),
     path('basket', BasketView.as_view(), name='basket'),
     path('order', OrderView.as_view(), name='order'),
     path('grappelli/', include('grappelli.urls')),

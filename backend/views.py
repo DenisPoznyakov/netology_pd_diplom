@@ -10,6 +10,7 @@ from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Q, Sum, F
 from django.http import JsonResponse, HttpResponse
+from django.views.decorators.cache import cache_page
 from requests import get
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
@@ -169,6 +170,9 @@ class CategoryView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class ShopView(ListAPIView):
     """
@@ -177,6 +181,9 @@ class ShopView(ListAPIView):
     """
     queryset = Shop.objects.filter(state=True)
     serializer_class = ShopSerializer
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class ProductInfoView(APIView):

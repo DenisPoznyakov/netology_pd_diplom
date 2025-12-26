@@ -195,6 +195,25 @@ SOCIAL_AUTH_GITHUB_SECRET = os.getenv('SOCIAL_AUTH_GITHUB_SECRET')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+# ------------------------------------------------------------------------------
+# Redis cash
+# ------------------------------------------------------------------------------
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",  # База 1 (0 используется Celery)
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": "netology_diplom_cache"  # Чтобы не конфликтовать с Celery
+    }
+}
+
+# Опционально: кэширование сессий через Redis (ускорит авторизацию)
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
 # ------------------------------------------------------------------------------
 # CELERY
 # ------------------------------------------------------------------------------
