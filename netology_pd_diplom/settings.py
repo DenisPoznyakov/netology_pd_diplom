@@ -3,12 +3,18 @@ Django settings for netology_pd_diplom project.
 
 Backend-приложение для автоматизации закупок (дипломный проект Netology).
 """
-
+import sentry_sdk
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+sentry_sdk.init(
+    dsn="https://6d5968af8527139d900dde04b889135a@o4510603086987264.ingest.de.sentry.io/4510603091181648",
+    send_default_pii=True,
+    environment='development',
+)
 
 # ------------------------------------------------------------------------------
 # BASE DIR

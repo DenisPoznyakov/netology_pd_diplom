@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.0/topics/http/urls/
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from django.http import HttpResponseServerError
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+    return HttpResponseServerError("Это не должно отобразиться")
 
 urlpatterns = [
     # Административная панель Django
@@ -27,4 +32,6 @@ urlpatterns = [
 
     # URL'ы для социальной аутентификации (GitHub OAuth)
     path('auth/', include('social_django.urls', namespace='social')),
+
+    path('sentry-debug/', trigger_error, name='sentry-debug'),
 ]
